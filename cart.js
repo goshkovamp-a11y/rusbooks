@@ -32,7 +32,7 @@ var cart = {
         item.querySelector(".c-qty").onchange=function(){cart.change(id,this.value);};
         cart.hItems.appendChild(item); cart.total+=cart.items[id]*p.price;
       }
-      item=document.createElement("div"); item.className="c-total"; item.id="c-total"; item.innerHTML=`TOTAL: ${cart.currency}${cart.total}`; cart.hItems.appendChild(item);
+      item=document.createElement("div"); item.className="c-total"; item.id="c-total"; item.innerHTML=`ИТОГ: ${cart.currency}${cart.total}`; cart.hItems.appendChild(item);
       item=document.getElementById("template-cart-checkout").content.cloneNode(true); cart.hItems.appendChild(item);
     }
     // обновление значка корзины
