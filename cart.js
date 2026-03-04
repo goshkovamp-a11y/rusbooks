@@ -42,18 +42,34 @@ var cart = {
   add:id=>{cart.items[id]=cart.items[id]?cart.items[id]+1:1; cart.save(); cart.list();},
   change:(id,qty)=>{if(qty<=0){delete cart.items[id];cart.save();cart.list();} else{cart.items[id]=Number(qty);cart.total=0;for(let pid in cart.items){cart.total+=cart.items[pid]*products[pid].price; document.getElementById("c-total").innerHTML=`TOTAL: ${cart.currency}${cart.total}`;}} },
   remove:id=>{delete cart.items[id];cart.save();cart.list();},
-  checkout : () => {
+  checkout: () => {
+  // Проверка, что корзина не пустая
+  if (Object.keys(cart.items).length === 0) {
+    alert("Корзина пуста");
+    return;
+  }
+
+  // Параметры Robokassa
   const merchantLogin = "Techsoprovozhdenie";
-  const password1 = "OJH2T3GWP5rRJpcm7b9g"; // из Robokassa
-  const invId = Date.now();
-  const outSum = cart.total.toFixed(2);
-  const description = "Оплата книг";
+  const password1 = "OJH2T3GWP5rRJpcm7b9g"; // тестовый пароль
+  const outSum = cart.total.toFixed(2); // сумма корзины с двумя знаками
+  const invId = Date.now(); // уникальный ID заказа (можно заменить на свой)
+  
+  // Описание заказа (список товаров)
+  let description = "Оплата книг: ";
+  for (let id in cart.items) {
+    const p = products[id];
+    description += `${p.name} (${cart.items[id]} шт.), `;
+  }
+  description = description.slice(0, -2); // убираем последнюю запятую
 
-  const signString = `${merchantLogin}:${outSum}:${invId}:${password1}`;
-  const signature = md5(signString);
+  // Формируем MD5 подпись
+  const signature = md5(`${merchantLogin}:${outSum}:${invId}:${password1}`);
 
+  // Ссылка на Robokassa
   const url = `https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=${merchantLogin}&OutSum=${outSum}&InvId=${invId}&Description=${encodeURIComponent(description)}&SignatureValue=${signature}`;
 
-  window.location.href = url;}
+  // Переходим на страницу оплаты
+  window.open(url, "_blank");} 
 };
 window.addEventListener("DOMContentLoaded",cart.init);
